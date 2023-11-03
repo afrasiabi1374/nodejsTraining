@@ -1,0 +1,57 @@
+{% extends 'layout/index.html' %}
+
+{% block content %}
+<div class="card-wrapper">
+    <div class="brand">
+        <img src="{{ TEMPLATE_NAME }}img/logo.jpg" alt="logo">
+    </div>
+    <div class="card fat">
+        <div class="card-body">
+            <h4 class="card-title">{{ t('user.title') }}</h4>
+            {% AlertDanger "err1" %}
+               please enter email
+            {% endAlertDanger %}
+            {% AlertDanger "err2" %}
+                email is not valid!
+            {% endAlertDanger %}
+            {% AlertDanger "err3" %}
+                please enter Password
+            {% endAlertDanger %}
+            {% AlertSuccess "ok" %}
+                success login :)
+            {% endAlertSuccess %}
+            {% AlertDanger "login-error" %}
+                email or password is not correct!
+            {% endAlertDanger %}
+
+          
+            <form method="POST" class="my-login-validation" action="" autocomplete="off">
+                <div class="form-group">
+                    <label for="email">E-Mail: <span class="text-danger">*</span></label>
+                    <input id="email" type="text" class="form-control" name="email" autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">
+                        Password : <span class="text-danger">*</span>
+                    </label>
+                    <input id="password" type="password" class="form-control" name="password">
+                </div>
+
+                <div class="form-group m-0">
+                    <button type="submit" class="btn btn-primary btn-block">
+                        Login
+                    </button>
+                </div>
+                <div class="mt-4 text-center">
+                    Don't have an account? <a href="/register">Register</a>
+                </div>
+                <div class="mt-4 text-center">
+                    <a href="/recovery">Reset Password</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

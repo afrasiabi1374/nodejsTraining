@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <base href="{{ APP_URL }}" >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ TEMPLATE_NAME }}css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ TEMPLATE_NAME }}css/my-login.css">
+    <title>{{ title }}</title>
+    {% block css %}{% endblock %}
+</head>
+<body class="my-login-page">
+	<section class="h-100">
+		<div class="container h-100">
+			<div class="row justify-content-md-center h-100">
+                {% block content %}{% endblock %}
+			</div>
+		</div>
+	</section>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="footer">
+                Copyright &copy; 2017 &mdash; Your Company 
+            </div>        
+        </div>
+    </div>
+    
+    {% block js %}{% endblock %}
+</body>
+</html>
