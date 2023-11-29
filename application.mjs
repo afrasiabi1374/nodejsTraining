@@ -1,6 +1,5 @@
 import {log,getEnv,random} from './core/utils.mjs';
 import express from 'express';
-import fileUpload from 'express-fileupload';
 import route from './routes/route.mjs';
 import nunjucks from 'nunjucks';
 import Error500 from './controllers/Error500Controller.mjs';
@@ -8,6 +7,12 @@ import Error404 from './controllers/Error404Controller.mjs';
 import translate from './core/translate.mjs';
 import * as templateHelper from './core/TemplateHelper.mjs';
 import { Redis } from './global.mjs';
+import TemplateReqMiddleware from './middlewares/template-req.mjs';
+import SessionMiddleware from './middlewares/session.mjs';
+import FileUploadMiddleware from './middlewares/fileUpload.mjs';
+import expressSession from 'express-session'
+import fileUpload from 'express-fileupload';
+
 class Application
 {
     #app = null;
@@ -26,20 +31,10 @@ class Application
             this.#app.use(express.static('assets'));
             this.#app.use(express.static('media'));
             this.#app.use(express.urlencoded({extended:true,limit:'10mb'}));
-            this.#app.use(express.json({limit:'10mb'}));
-            this.#app.use(fileUpload({
-                useTempFiles : true,
-                tempFileDir : '/tmp/'
-            }));
-            this.#app.use(async (req,res,next) => {
-                try{
-                    this.#app.set('req',req);
-                    next();
-                }
-                catch(e){
-                    next();
-                }
-            });
+            this.#app.use(express.json({limit:'10mb'}))
+            this.#app.use(new FileUploadMiddleware().handle)
+            this.#app.use(new TemplateReqMiddleware().handle)
+            this.#app.use(new SessionMiddleware().handle)
             this.#initTemplateEngine();
         }
         catch(e){
@@ -75,7 +70,7 @@ class Application
             this.#templateEngine.addExtension('alertSuccessExtension',new templateHelper.alertSuccessExtension());
         }
         catch(e){
-            log(`Error on : initTemplateEngine ${e.toString()}`);
+            log(`Error on =>: initTemplateEngine ${e.toString()}`);
         }
     }
 
@@ -90,16 +85,38 @@ class Application
                 log('Redis Can not Connect');
                 process.exit(-1);
             }
-    
+            await Redis.ftCreate('user', 'user:', 'id TEXT SORTABLE username TEXT SORTABLE password TEXT SORTABLE')
+            const result = await Redis.ftSearch('user',  '*','SORTBY id DESC')
+            log('result 1 ===>> '+ JSON.stringify(result))
+            ////////
+            const result2 = await Redis.ftSearch('user', '*', 'LIMIT 0 0')
+            log('result 2 ===>> '+ result2)
+            ////////
+            const result3 = await Redis.ftSearch('user', '*', 'return 1 username')
+            log('result 3 ===>> '+ JSON.stringify(result3))
+            /////
+            const result4 = await Redis.ftSearch('user', '*',
+             'return 1 username')
+            console.dir('result 4 ===>> '+  JSON.stringify(result4))
+            /////
+            const result5 = await Redis.ftSearch('user', `
+            @username:meisamrce @password:123`,
+             'return 1 username')
+            log('result 5 ===>> '+ JSON.stringify(result5))
+
+
+            log(result5)
             const PORT = getEnv('PORT','number');
-            this.#app.listen(PORT,async() => {
+            this.#app.listen(PORT, '0.0.0.0',async() => {
                 log(`app listening on port ${PORT}`);
-            });    
+            });
         }
         catch(e){
             log(`Error on : run ${e.toString()}`);
         }
     }
+
+
 
 }
 

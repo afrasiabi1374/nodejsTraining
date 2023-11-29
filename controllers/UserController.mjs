@@ -3,7 +3,7 @@ import {validationResult,body} from 'express-validator';
 import translate from "../core/translate.mjs";
 import {Redis} from './../global.mjs';
 import crypto from './../core/crypto.mjs';
-import {random, stringify} from './../core/utils.mjs';
+import {log, random, stringify} from './../core/utils.mjs';
 import datetime from './../core/datetime.mjs';
 
 
@@ -44,13 +44,15 @@ class UserController extends BaseController
             {
                 return res.redirect(`/?msg=${result?.errors[0]?.msg}`);
             }   
-            const email = super.input(req.body.email);
-            const password = super.input(req.body.password);
-            const hashEmail = crypto.hash(email);
-            const user = await Redis.get(`user_${hashEmail}`);
+            let email = super.input(req.body.email);
+            let password = super.input(req.body.password);
+            let hashEmail = crypto.hash(email);
+            let user = await Redis.get(`user_${hashEmail}`);
             if(user?.id && password === user?.password)
             {
-                return res.redirect("/?msg=ok");
+                // req.session.id = await user?.id
+
+                return res.redirect(`/profile?id=${user?.id}`);
             }
             else
             {
@@ -188,6 +190,20 @@ class UserController extends BaseController
         }
         catch(e){
             return super.toError(e,req,res);
+        }
+    }
+
+    async profile(req, res){
+        try {
+            await log(req.session)
+            const user = await Redis.get(`user_${id}`)
+            let data = await {
+                title: "Profile",
+                user: user
+            }
+            return res.render('user/profile.html', data)
+        } catch (e) {
+            return super.toError(e,req.res)
         }
     }
 

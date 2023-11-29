@@ -1,4 +1,4 @@
-import ioredis from 'ioredis';
+import ioredis, {Command} from 'ioredis';
 import { log, toNumber, stringify, isJSON, toJSON, sleep } from './utils.mjs';
 
 class Redis
@@ -25,7 +25,7 @@ class Redis
     }
 
 
-    async set(key,data = {},ex=0)
+    async set(key, data, ex=0)
     {
         try{
             data = (typeof data === 'string') ? data : stringify(data); 
@@ -115,7 +115,84 @@ class Redis
         }
     } 
 
+    // ساخت ایندکس
     
+    async ftCreate(indexName, keySpace, schema=''){
+        try {
+            log(11111111111111333333333333)
+            await this.ftDropIndex(indexName)
+            const cmd = new Command('FT.CREATE'
+            ,[indexName, 'ON', 'HASH', 'PREFIX', 1, keySpace, 'SCHEMA', schema.split(' ')], "utf-8");
+            await this.#redis.sendCommand(cmd)
+
+            return true
+        } catch (e) {
+            log(e)
+            return false
+        }
+    }
+
+    async ftDropIndex(indexName){
+        try {
+            const cmdInfo = new  Command('FT.DROPINDEX', [indexName, 'KEEPDOCKS'], 'utf-8')
+            this.#redis.sendCommand(cmdInfo)
+            return true
+        } catch (e) {
+            log(e)
+            return false
+        }
+    }
+/////////redis -  SEARCH  ////////
+    async ftSearch(indexName, query, params=[]){
+        try {
+            // چون پارامتر باید بصورت آرایه پاس داده بشه به آی او ردیس
+            const paramsEnd = params.length === 0 ? [] : params.split(' ')
+            const result  = await this.#redis.call('FT.SEARCH', indexName, query, paramsEnd)
+            return this.#toObject(result)
+        } catch (e) {
+            
+            return {"count":  0, "rows": []}
+        }
+    }
+
+    #toObject(data = []){
+        try {
+            if (data.length === 1) {
+                return {"count": data[0], "rows": []};//count rows
+            } else {
+                const ret = {"count": data[0]};//count rows
+                data.shift()
+                const rows = []
+                let keyObject =  {}
+                let item = {}
+                
+                for( let row of data ){
+       
+                    if (typeof row === 'string') {
+                        keyObject['key'] = row
+                    }
+                    else if(typeof row === 'object'){
+                        for(let i = 0 ; i < row.length ; i+=2) {
+                            const key = row[i]
+                            const value  = row[i+1]
+                            item[key] = value
+                        }
+                    }
+                    if (Object.keys(keyObject).length > 0 && Object.keys(item).length > 0) {
+                        const newObject = Object.assign({}, item, keyObject)
+                        keyObject = {}
+                        item = {}
+                        rows.push({newObject})
+                    }
+                }
+                ret['rows'] = rows
+                return ret
+            }
+        } catch (e) {
+            log(e)
+            return {"count": 0, "rows": []}
+        }
+    }
 
 }
 

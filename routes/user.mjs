@@ -8,6 +8,7 @@ try{
     route.post('/register',UserController.postRegister);
     route.get('/recovery',UserController.recovery);
     route.post('/recovery',UserController.postRecovery);
+    route.get('/profile',UserController.profile);
 
 }
 catch(e){
