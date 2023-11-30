@@ -44,10 +44,10 @@ class UserController extends BaseController
             {
                 return res.redirect(`/?msg=${result?.errors[0]?.msg}`);
             }   
-            let email = super.input(req.body.email);
-            let password = super.input(req.body.password);
-            let hashEmail = crypto.hash(email);
-            let user = await Redis.get(`user_${hashEmail}`);
+            const email = super.input(req.body.email);
+            const password = super.input(req.body.password);
+            const hashEmail = crypto.hash(email);
+            const user = await Redis.get(`user_${hashEmail}`);
             if(user?.id && password === user?.password)
             {
                 // req.session.id = await user?.id
@@ -195,14 +195,16 @@ class UserController extends BaseController
 
     async profile(req, res){
         try {
-            await log(req.session)
+            // log(req.session)
+            const id = super.input(req.query.id)
             const user = await Redis.get(`user_${id}`)
-            let data = await {
+            let data =  {
                 title: "Profile",
                 user: user
             }
             return res.render('user/profile.html', data)
         } catch (e) {
+            log(e)
             return super.toError(e,req.res)
         }
     }
