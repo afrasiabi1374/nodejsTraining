@@ -32,9 +32,9 @@ class Application
             this.#app.use(express.static('media'));
             this.#app.use(express.urlencoded({extended:true,limit:'10mb'}));
             this.#app.use(express.json({limit:'10mb'}))
+            this.#app.use(new SessionMiddleware().handle)
             this.#app.use(new FileUploadMiddleware().handle)
             this.#app.use(new TemplateReqMiddleware().handle)
-            this.#app.use(new SessionMiddleware().handle)
             this.#initTemplateEngine();
         }
         catch(e){
