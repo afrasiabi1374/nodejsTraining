@@ -231,6 +231,21 @@ class UserController extends BaseController
         }
     }
 
+
+    async logout(req, res){
+        try {
+            if (req?.session?.user_id)
+            {                
+                await delete req?.session?.user_id
+                await req.session.destroy()
+                return res.redirect("/?msg=logout-sucess")
+            }
+        } catch (e) {
+            log(e)
+            return super.toError(e,req.res)
+        }
+    }
+
 }
 
 

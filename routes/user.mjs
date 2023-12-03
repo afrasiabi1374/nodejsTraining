@@ -9,6 +9,7 @@ try{
     route.get('/recovery',UserController.recovery);
     route.post('/recovery',UserController.postRecovery);
     route.get('/profile',UserController.profile);
+    route.get('/logout',UserController.logout);
 
 }
 catch(e){
