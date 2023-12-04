@@ -19,9 +19,6 @@ class UserController extends BaseController
     async index(req,res)
     {
         try{
-            if (req?.session?.user_id) {
-                return res.redirect("/profile")
-            }
             const data = {
                 "title" : translate.t("user.title")
             };
@@ -40,12 +37,8 @@ class UserController extends BaseController
         return validationResult(req);   
     }
 
-    async login(req,res){
+    async indexPost(req,res){
         try{
-            if (req?.session?.user_id) {
-                return redirect("/profile")
-            }
-
             const result = await this.#loginValidation(req);
             if(!result.isEmpty())
             {
@@ -74,9 +67,6 @@ class UserController extends BaseController
     async register(req,res)
     {
         try{
-            if (req?.session?.user_id) {
-                return res.redirect("/profile")
-            }
             const data = {
                 "title" : translate.t("user.register")
             };
@@ -98,9 +88,7 @@ class UserController extends BaseController
 
     async postRegister(req,res){
         try{
-            if (req?.session?.user_id) {
-                return res.redirect("/profile")
-            }
+
             const result = await this.#registerValidation(req);
             if(!result.isEmpty())
             {
@@ -147,9 +135,7 @@ class UserController extends BaseController
     async recovery(req,res)
     {
         try{
-            if (req?.session?.user_id) {
-                return res.redirect("/profile")
-            }
+
             const data = {
                 "title" : translate.t("user.recovery")
             };
@@ -169,9 +155,7 @@ class UserController extends BaseController
 
     async postRecovery(req,res){
         try{
-            if (req?.session?.user_id) {
-                return res.redirect("/profile")
-            }
+
             const result = await this.#recoveryValidation(req);
             if(!result.isEmpty())
             {
@@ -213,18 +197,15 @@ class UserController extends BaseController
 
     async profile(req, res){
         try {
-            if (req?.session?.user_id)
-            {                
-                const id = super.input(req.session?.user_id)
-                const user = await Redis.get(`user_${id}`)
-                let data =  {
-                    title: "Profile",
-                    user: user
-                }
-                return res.render('user/profile.html', data)
-            } else {
-                return res.redirect("/?msg=no-access")
+            
+            const id = super.input(req.session?.user_id)
+            const user = await Redis.get(`user_${id}`)
+            let data =  {
+                title: "Profile",
+                user: user
             }
+            return res.render('user/profile.html', data)
+
         } catch (e) {
             log(e)
             return super.toError(e,req.res)
@@ -234,12 +215,9 @@ class UserController extends BaseController
 
     async logout(req, res){
         try {
-            if (req?.session?.user_id)
-            {                
-                await delete req?.session?.user_id
-                await req.session.destroy()
-                return res.redirect("/?msg=logout-sucess")
-            }
+            await delete req?.session?.user_id
+            await req.session.destroy()
+            return res.redirect("/?msg=logout-sucess")
         } catch (e) {
             log(e)
             return super.toError(e,req.res)

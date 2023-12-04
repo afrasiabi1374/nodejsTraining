@@ -1,6 +1,6 @@
 
 import BaseMiddleware from "../core/BaseMiddleware.mjs";
-class TemplateReqMiddleware extends BaseMiddleware{
+export default class TemplateReqMiddleware extends BaseMiddleware{
 
     constructor(){
         super()
@@ -18,4 +18,3 @@ class TemplateReqMiddleware extends BaseMiddleware{
     }
 }
 
-export default TemplateReqMiddleware

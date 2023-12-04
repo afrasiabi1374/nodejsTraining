@@ -10,8 +10,6 @@ import { Redis } from './global.mjs';
 import TemplateReqMiddleware from './middlewares/template-req.mjs';
 import SessionMiddleware from './middlewares/session.mjs';
 import FileUploadMiddleware from './middlewares/fileUpload.mjs';
-import expressSession from 'express-session'
-import fileUpload from 'express-fileupload';
 
 class Application
 {

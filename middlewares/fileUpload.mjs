@@ -2,7 +2,7 @@ import BaseMiddleware from "../core/BaseMiddleware.mjs";
 import { log } from "../core/utils.mjs";
 import fileUpload from "express-fileupload";
 
-class FileUploadMiddleware extends BaseMiddleware{
+export default  class FileUploadMiddleware extends BaseMiddleware{
 
     constructor(){
         super()
@@ -21,4 +21,3 @@ class FileUploadMiddleware extends BaseMiddleware{
         }
 }
 
-export default FileUploadMiddleware

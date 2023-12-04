@@ -6,7 +6,7 @@ import connectRedis from 'connect-redis'
 
 const RedisStore = connectRedis(expressSession)
 
-class SessionMiddleware extends BaseMiddleware{
+export default class SessionMiddleware extends BaseMiddleware{
 
     constructor(){
         super()
@@ -37,4 +37,3 @@ class SessionMiddleware extends BaseMiddleware{
         }
 }
 
-export default SessionMiddleware
