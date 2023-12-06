@@ -37,7 +37,7 @@ class UserController extends BaseController
         return validationResult(req);   
     }
 
-    async indexPost(req,res){
+    async postIndex(req,res){
         try{
             const result = await this.#loginValidation(req);
             if(!result.isEmpty())

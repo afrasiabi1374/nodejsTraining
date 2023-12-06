@@ -1,12 +1,15 @@
 import { Router } from "express";
 import TestController from "../controllers/TestController.mjs";
-const route = Router();
+import { log } from "../core/utils.mjs";
 
-try{
-    route.get('/',TestController.index);
+export default  () => {
+    const route = Router();
+    try{
+        route.get('/',TestController.index);
+    }
+    catch(e){
+         log('error in test.mjs')
+       route.use(TestController.errorHandling(e.toString()));
+    }
+    return route
 }
-catch(e){
-   route.use(TestController.errorHandling(e.toString()));
-}
-
-export default route;

@@ -9,25 +9,27 @@ export default class AuthMiddleware extends BaseMiddleware{
     needAuth(req,res,next){
         try{
             if (req?.session?.user_id) {
-                next()
+                return next()
             }else{
                 return res.redirect(`${getEnv('APP_URL')}?msg=no-access`)
             }
         }
         catch(e){
+            log('error in needAuth')
             return super.toError(e,req,res)
         }
     }
 
-    checkAuth(req,res,next){
+    async isAuth(req,res,next){
         try{
             if (req?.session?.user_id) {
                 return res.ridirect(`${getEnv('APP_URL')}profile`)
             }else{
-                next()
+                return next()
             }
         }
         catch(e){
+            log('error in isAuth')
             return super.toError(e,req,res)
         }
     }

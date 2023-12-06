@@ -16,11 +16,7 @@ class Application
     #app = null;
     #templateEngine = null;
     
-    constructor()
-    {
-        this.#initExpress();
-        this.#initRoute();
-    }
+
 
     async #initExpress()
     {
@@ -43,7 +39,7 @@ class Application
     async #initRoute()
     {
         try{
-            this.#app.use('/',route);
+            this.#app.use('/',route());
             this.#app.use(Error404.handle);
             this.#app.use(Error500.handle);        
         }
@@ -72,18 +68,25 @@ class Application
         }
     }
 
+    async #init(){
+        log(`Application is run!`);
+        const redisStatus =  await Redis.connect(getEnv('REDIS_URI'));
+        if(!redisStatus)
+        {
+            log('Redis Can not Connect');
+            process.exit(-1);
+        }
+        await this.#initExpress();
+        await this.#initRoute();
+
+        await Redis.ftCreate('user', 'user:', 'id TEXT SORTABLE username TEXT SORTABLE password TEXT SORTABLE')
+
+    }
 
     async run()
     {
         try{
-            log(`Application is run!`);
-            const redisStatus =  await Redis.connect(getEnv('REDIS_URI'));
-            if(!redisStatus)
-            {
-                log('Redis Can not Connect');
-                process.exit(-1);
-            }
-            await Redis.ftCreate('user', 'user:', 'id TEXT SORTABLE username TEXT SORTABLE password TEXT SORTABLE')
+            await this.#init()
             const result = await Redis.ftSearch('user',  '*','SORTBY id DESC')
             log('result 1 ===>> '+ JSON.stringify(result))
             ////////
