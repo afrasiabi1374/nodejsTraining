@@ -5,15 +5,13 @@ import {Redis} from './../global.mjs';
 import crypto from './../core/crypto.mjs';
 import {log, random, stringify} from './../core/utils.mjs';
 import datetime from './../core/datetime.mjs';
-
-
-
+log('x1')
 class UserController extends BaseController
 {
-
     constructor()
     {
         super();
+        log('x2')
     }
 
     async index(req,res)
@@ -227,4 +225,4 @@ class UserController extends BaseController
 }
 
 
-export default new UserController();
+export default  UserController;

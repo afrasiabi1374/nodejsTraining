@@ -18,4 +18,4 @@ class Error500Controller extends BaseController
 }
 
 
-export default new Error500Controller();
+export default  Error500Controller;

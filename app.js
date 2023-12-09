@@ -1,9 +1,10 @@
-import application from "./application.mjs";
+import Application from "./application.mjs";
 import {log} from './core/utils.mjs';
 async function main()
 {
     try{
-        await application.run();
+        const app = new Application()
+        await  app.run();
     }
     catch(e){
         log(`Error on : main ${e.toString()}`);

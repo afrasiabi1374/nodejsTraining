@@ -58,4 +58,4 @@ class TestController extends BaseController
 }
 
 
-export default new TestController();
+export default  TestController

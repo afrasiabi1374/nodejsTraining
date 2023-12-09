@@ -1,6 +1,5 @@
 import {log,getEnv,random} from './core/utils.mjs';
 import express from 'express';
-import route from './routes/route.mjs';
 import nunjucks from 'nunjucks';
 import Error500 from './controllers/Error500Controller.mjs';
 import Error404 from './controllers/Error404Controller.mjs';
@@ -39,12 +38,13 @@ class Application
     async #initRoute()
     {
         try{
-            this.#app.use('/',route());
-            this.#app.use(Error404.handle);
-            this.#app.use(Error500.handle);        
+            const route = await  import('./routes/route.mjs');
+            this.#app.use('/',route.default);
+            this.#app.use(new Error404().handle);
+            this.#app.use(new Error500().handle);
         }
         catch(e){
-            log(`Error on : initRoute ${e.toString()}`);
+            log(`Error on : initRoute  at application.mjs--${e.toString()}`);
         }
     }
 
@@ -122,4 +122,4 @@ class Application
 }
 
 
-export default new Application();
+export default  Application

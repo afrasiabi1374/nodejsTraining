@@ -18,4 +18,4 @@ class Error404Controller extends BaseController
 }
 
 
-export default new Error404Controller();
+export default  Error404Controller;
