@@ -5,7 +5,7 @@ import Error500 from './controllers/Error500Controller.mjs';
 import Error404 from './controllers/Error404Controller.mjs';
 import translate from './core/translate.mjs';
 import * as templateHelper from './core/TemplateHelper.mjs';
-import { Redis } from './global.mjs';
+import { MongoDB, Redis } from './global.mjs';
 import TemplateReqMiddleware from './middlewares/template-req.mjs';
 import SessionMiddleware from './middlewares/session.mjs';
 import FileUploadMiddleware from './middlewares/fileUpload.mjs';
@@ -76,6 +76,18 @@ class Application
             log('Redis Can not Connect');
             process.exit(-1);
         }
+
+        const mongoDbStatus = await MongoDB.connect(getEnv('MONGODB_URI'))
+        log(`mongodb status =    ${mongoDbStatus}`)
+        if(!mongoDbStatus)
+        {
+
+            log('mongoDB cant connect.')
+            process.exit(-1);
+
+            
+        }
+
         await this.#initExpress();
         await this.#initRoute();
 

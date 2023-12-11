@@ -5,13 +5,13 @@ import {Redis} from './../global.mjs';
 import crypto from './../core/crypto.mjs';
 import {log, random, stringify} from './../core/utils.mjs';
 import datetime from './../core/datetime.mjs';
-log('x1')
+import UserModel from "../models/user.js";
 class UserController extends BaseController
 {
     constructor()
     {
         super();
-        log('x2')
+        this.model = new UserModel()
     }
 
     async index(req,res)
@@ -99,30 +99,35 @@ class UserController extends BaseController
             {
                 return res.redirect(`/register?msg=err5`);
             }
-            const hashEmail = crypto.hash(email);
-            const alreadyEmail = await Redis.get(`user_${hashEmail}`);
-            if(alreadyEmail === '')
-            {
-                const data = {
-                    "email" : email,
-                    "id" : hashEmail,
-                    "password" : password2
-                };
-                await Redis.set(`user_${hashEmail}`, data);
-                const userData = {
-                    "email": email,
-                    "sleep": random(1000,10000)
-                }
-                // سرویس ایمیل سرویس ران شده باشد
-                await Redis.redis.rpush("email_list", stringify(userData))
-                // سرویس رجیستر ران شده باشد
-                await Redis.redis.publish('news1', `register a new user ${email} ${datetime.toString()}`)
-                return res.redirect("/register?msg=ok");
-            }
-            else
-            {
-                return res.redirect("/register?msg=already-email");
-            }
+
+
+            const resultDB = await this.model.register(email, password2) 
+            res.send('ok')
+
+            // const hashEmail = crypto.hash(email);
+            // const alreadyEmail = await Redis.get(`user_${hashEmail}`);
+            // if(alreadyEmail === '')
+            // {
+            //     const data = {
+            //         "email" : email,
+            //         "id" : hashEmail,
+            //         "password" : password2
+            //     };
+            //     await Redis.set(`user_${hashEmail}`, data);
+            //     const userData = {
+            //         "email": email,
+            //         "sleep": random(1000,10000)
+            //     }
+            //     // سرویس ایمیل سرویس ران شده باشد
+            //     await Redis.redis.rpush("email_list", stringify(userData))
+            //     // سرویس رجیستر ران شده باشد
+            //     await Redis.redis.publish('news1', `register a new user ${email} ${datetime.toString()}`)
+            //     return res.redirect("/register?msg=ok");
+            // }
+            // else
+            // {
+            //     return res.redirect("/register?msg=already-email");
+            // }
         }
         catch(e){
             return super.toError(e,req,res);
